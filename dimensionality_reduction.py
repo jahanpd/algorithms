@@ -13,7 +13,7 @@ class autoencoder:
         self.m, self.n = x.shape # m is rows (number of samples) and n is cols (features)
 
 
-    def build_model(self, layers, nodes, dim_red):
+    def build_model(self, layers, dim_red):
         inputs = Input(shape=(self.n,))
         f = Dense(self.n, activation='relu')(inputs)
         steps = (self.n - dim_red)/layers
@@ -37,7 +37,7 @@ class autoencoder:
         self.reduce_dims.set_weights(self.autoencode.get_weights())
 
     def predict(self, x, reduce = None):
-        if reduce is not None:
+        if reduce is None:
             return self.autoencode.predict(x.astype(np.float32))
         else:
             return self.reduce_dims.predict(x.astype(np.float32))
