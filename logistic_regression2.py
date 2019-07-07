@@ -39,11 +39,21 @@ class logistic_regression:
             # store history
             self.cost_history.append(c.numpy())
             self.accuracy_history.append(accuracy.result().numpy())
-            print("Epoch:", epoch,
-                  " Cost:", self.cost_history[-1],
-                  " AUC:",self.accuracy_history[-1])
+            if epoch % 10 == 0:
+                print("Epoch:", epoch,
+                      " Cost:", self.cost_history[-1],
+                      " AUC:",self.accuracy_history[-1])
 
         if path is not None:
             pass
 
         return self.cost_history, self.accuracy_history
+
+    def predict(self, x, y=None): # have the option to predict on new data alone, or test set
+        Y_h = tf.nn.softmax((tf.matmul(x.astype(np.float32), self.W) + self.b))
+        if y is not None:
+            accuracy = tf.keras.metrics.AUC()
+            accuracy.update_state(y,Y_h)
+            return Y_h, accuracy.result().numpy()
+        else:
+            return Y_h
