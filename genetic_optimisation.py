@@ -64,7 +64,7 @@ class genetic_optimisation:
             for gen in range(self.generations):
                 performance = SumTree(self.size)
                 hp1 = np.random.randint(low = self.param_one[0], high = self.param_one[1], size=(self.size - len(top_performers))*2)
-                hps = np.append(np.array(top_performers).reshape((-1,2)), hp1.reshape((-1,2))
+                hps = np.append(np.array(top_performers).reshape((-1,2)), hp1.reshape((-1,2)))
                 for hp in hps: # train all models and save performance
                     print(hp)
                     temp= self.model(self.x_train,self.y_train)
@@ -81,8 +81,8 @@ class genetic_optimisation:
                 mated_hp1 = []
                 for mate in hyperparameters: # mating routine with mendellian inheritance from the two alleles
                     mated_hp1.append(np.random.choice(mate[np.array([0,1])]))
-                    mated_hp1.append(np.random.choice(hyperparameters[np.random.randint(len(hyperparameters)))))
-                top_performers = np.dstack((np.array(hp1))).reshape((-1,2))
+                    mated_hp1.append(np.random.choice(hyperparameters[np.random.randint(len(hyperparameters))]))
+                top_performers = np.array(mated_hp1).reshape((-1,2))
                 print("generation:", gen,
                       "  min performance (params, metric):", hyperparameters[0], keep_metrics[0],
                       "  max performance:", hyperparameters[-1], keep_metrics[-1])
