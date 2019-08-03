@@ -34,6 +34,6 @@ class MLP:
                                     y=self.y,
                                     validation_split=0.1,
                                     epochs=epoch)
-        
+
     def evaluate(self, x, y): # have the option to predict on new data alone, or test set
         return self.mlp.evaluate(x=x.astype(np.float32), y=y.astype(np.float32))[1]

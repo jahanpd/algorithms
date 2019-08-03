@@ -31,9 +31,6 @@ class SumTree:
     def total(self):
         return self.tree[0]
 
-    def p_array(self):
-        return self.tree[-self.capacity:]
-
     def add(self, p, data):
         idx = self.write + self.capacity - 1
 
@@ -44,6 +41,9 @@ class SumTree:
         if self.write >= self.capacity:
             self.write = 0
 
+    def p_array(self):
+        return self.tree[-self.capacity:]
+        
     def update(self, idx, p):
         change = p - self.tree[idx]
 
@@ -55,54 +55,3 @@ class SumTree:
         dataIdx = idx - self.capacity + 1
 
         return (idx, self.tree[idx], self.data[dataIdx])
-
-    def normalise(self):
-        self.total = numpy.sum(self.tree[-self.capacity:])
-        for i in range(self.capacity - 1, len(self.tree), 1):
-            p_norm = self.tree[i]/self.total
-            self.update(i, p_norm)
-
-    def unnormalise(self):
-        for i in range(self.capacity - 1, len(self.tree), 1):
-            p = self.tree[i]*self.total
-            self.update(i, p)
-
-    def memory(self):
-        return self.tree.nbytes + self.data.nbytes
-
-
-def perfect_run(iterations, dataset):
-    values = []
-    for iteration in range(iterations):
-        cash = [1000]
-        position = [0]
-        value =[1000]
-        for t in range(len(dataset)- 60):
-            # define current environment/state (s) and next environment (s1)
-            s = dataset[t:t+60]
-            s1 = dataset[t+1:t+61]
-            # update cash and position metrics
-            def a_is_0():
-                if cash[-1] == 0:
-                    cash.append(position[-1]*s[-1])
-                    position.append(0)
-                    value.append(cash[-1])
-                else:
-                    cash.append(cash[-1])
-                    position.append(0)
-                    value.append(cash[-1])
-            def a_is_1():
-                if position[-1] == 0:
-                    position.append(cash[-1]/s[-1])
-                    cash.append(0)
-                    value.append(position[-1]*s[-1])
-                else:
-                    position.append(position[-1])
-                    value.append(position[-1]*s[-1])
-            # perfect walk
-            if s1[-1] > s[-1]:
-                a_is_1()
-            else:
-                a_is_0()
-        values.append(value[-1])
-    return values, value

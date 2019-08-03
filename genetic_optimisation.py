@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from sumtree import SumTree
 
@@ -72,7 +73,7 @@ class genetic_optimisation:
                     temp.train(self.epochs)
                     metric = temp.evaluate(self.x_test, self.y_test)
                     performance.add(metric, np.array([hp]))
-                keep_metrics = performance.tree[-int(self.keep):] # array of the highest performing metrics
+                keep_metrics = np.sort(performance.p_array())[-int(self.keep):] # array of the highest performing metrics
                 hyperparameters = [] # array to store the best n=self.keep performing hyperparameters
                 for metric in keep_metrics: # note that the order of keep metrics is lowest to highest performance
                     _, __, hp_temp = performance.get(metric)
@@ -95,6 +96,7 @@ class genetic_optimisation:
         if self.params == 2:
             top_performers = []
             gen_performance = []
+            os.mkdir("temp")
             for gen in range(self.generations):
                 performance = SumTree(self.size)
                 hp1 = np.random.randint(low = self.param_one[0], high = self.param_one[1], size=(self.size - len(top_performers))*2)
@@ -109,7 +111,7 @@ class genetic_optimisation:
                     temp.train(self.epochs)
                     metric = temp.evaluate(self.x_test, self.y_test)
                     performance.add(metric, np.array([hp]))
-                keep_metrics = performance.tree[-int(self.keep):] # array of the highest performing metrics
+                keep_metrics = np.sort(performance.p_array())[-int(self.keep):] # array of the highest performing metrics
                 hyperparameters = [] # array to store the best n=self.keep performing hyperparameters
                 for metric in keep_metrics: # note that the order of keep metrics is lowest to highest performance
                     _, __, hp_temp = performance.get(metric)
@@ -122,11 +124,16 @@ class genetic_optimisation:
                     mated_hp1.append(np.random.choice(hyperparameters[np.random.randint(len(hyperparameters))][np.array([0,2])]))
                     mated_hp2.append(np.random.choice(mate[np.array([1,3])]))
                     mated_hp2.append(np.random.choice(hyperparameters[np.random.randint(len(hyperparameters))][np.array([1,3])]))
-                top_performers = np.dstack((np.array(hp1),np.array(hp2))).reshape((-1,4))
+                top_performers = np.dstack((np.array(mated_hp1),
+                                            np.array(mated_hp2))
+                                            ).reshape((-1,4))
                 print("generation:", gen,
                       "  min performance (params, metric):", hyperparameters[0], keep_metrics[0],
                       "  max performance:", hyperparameters[-1], keep_metrics[-1])
                 gen_performance.append([keep_metrics[0],keep_metrics[-1]])
+                np.savetxt("temp/gen_perf.csv",np.array(gen_performance).reshape(-1,2),delimiter=",")
+            os.remove("temp/gen_perf.csv")
+            os.rmdir("temp")
             self.hyperparameters = hyperparameters
             self.keep_metrics = keep_metrics
             return(hyperparameters, keep_metrics, np.array(gen_performance).reshape(-1,2))
@@ -150,7 +157,7 @@ class genetic_optimisation:
                     temp.train(self.epochs)
                     metric = temp.evaluate(self.x_test, self.y_test)
                     performance.add(metric, np.array([hp]))
-                keep_metrics = performance.tree[-int(self.keep):] # array of the highest performing metrics
+                keep_metrics = np.sort(performance.p_array())[-int(self.keep):] # array of the highest performing metrics
                 hyperparameters = [] # array to store the best n=self.keep performing hyperparameters
                 for metric in keep_metrics: # note that the order of keep metrics is lowest to highest performance
                     _, __, hp_temp = performance.get(metric)
@@ -166,7 +173,10 @@ class genetic_optimisation:
                     mated_hp2.append(np.random.choice(hyperparameters[np.random.randint(len(hyperparameters))][np.array([1,4])]))
                     mated_hp3.append(np.random.choice(mate[np.array([2,5])]))
                     mated_hp3.append(np.random.choice(hyperparameters[np.random.randint(len(hyperparameters))][np.array([2,5])]))
-                top_performers = np.dstack((np.array(hp1),np.array(hp2),np.array(hp3))).reshape((-1,6))
+                top_performers = np.dstack((np.array(mated_hp1),
+                                            np.array(mated_hp2),
+                                            np.array(mated_hp3))
+                                            ).reshape((-1,6))
                 print("generation:", gen,
                       "  min performance (params, metric):", hyperparameters[0], keep_metrics[0],
                       "  max performance:", hyperparameters[-1], keep_metrics[-1])
@@ -196,7 +206,7 @@ class genetic_optimisation:
                     temp.train(self.epochs)
                     metric = temp.evaluate(self.x_test, self.y_test)
                     performance.add(metric, np.array([hp]))
-                keep_metrics = performance.tree[-int(self.keep):] # array of the highest performing metrics
+                keep_metrics = np.sort(performance.p_array())[-int(self.keep):] # array of the highest performing metrics
                 hyperparameters = [] # array to store the best n=self.keep performing hyperparameters
                 for metric in keep_metrics: # note that the order of keep metrics is lowest to highest performance
                     _, __, hp_temp = performance.get(metric)
@@ -215,7 +225,11 @@ class genetic_optimisation:
                     mated_hp3.append(np.random.choice(hyperparameters[np.random.randint(len(hyperparameters))][np.array([2,6])]))
                     mated_hp4.append(np.random.choice(mate[np.array([3,7])]))
                     mated_hp4.append(np.random.choice(hyperparameters[np.random.randint(len(hyperparameters))][np.array([3,7])]))
-                top_performers = np.dstack((np.array(hp1),np.array(hp2),np.array(hp3),np.array(hp4))).reshape((-1,8))
+                top_performers = np.dstack((np.array(mated_hp1),
+                                            np.array(mated_hp2),
+                                            np.array(mated_hp3),
+                                            np.array(mated_hp4))
+                                            ).reshape((-1,8))
                 print("generation:", gen,
                       "  min performance (params, metric):", hyperparameters[0], keep_metrics[0],
                       "  max performance:", hyperparameters[-1], keep_metrics[-1])
@@ -247,7 +261,7 @@ class genetic_optimisation:
                     temp.train(self.epochs)
                     metric = temp.evaluate(self.x_test, self.y_test)
                     performance.add(metric, np.array([hp]))
-                keep_metrics = performance.tree[-int(self.keep):] # array of the highest performing metrics
+                keep_metrics = np.sort(performance.p_array())[-int(self.keep):] # array of the highest performing metrics
                 hyperparameters = [] # array to store the best n=self.keep performing hyperparameters
                 for metric in keep_metrics: # note that the order of keep metrics is lowest to highest performance
                     _, __, hp_temp = performance.get(metric)
@@ -269,7 +283,12 @@ class genetic_optimisation:
                     mated_hp4.append(np.random.choice(hyperparameters[np.random.randint(len(hyperparameters))][np.array([3,8])]))
                     mated_hp5.append(np.random.choice(mate[np.array([4,9])]))
                     mated_hp5.append(np.random.choice(hyperparameters[np.random.randint(len(hyperparameters))][np.array([4,9])]))
-                top_performers = np.dstack((np.array(hp1),np.array(hp2),np.array(hp3),np.array(hp4),np.array(hp5))).reshape((-1,10))
+                top_performers = np.dstack((np.array(mated_hp1),
+                                            np.array(mated_hp2),
+                                            np.array(mated_hp3),
+                                            np.array(mated_hp4),
+                                            np.array(mated_hp5))
+                                            ).reshape((-1,10))
                 print("generation:", gen,
                       "  min performance (params, metric):", hyperparameters[0], keep_metrics[0],
                       "  max performance:", hyperparameters[-1], keep_metrics[-1])
